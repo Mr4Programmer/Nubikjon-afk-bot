@@ -1217,7 +1217,7 @@ const botVersion =
     // --- PROXY CONFIGURATION ---
     // You can also put these inside your config.json later if you want!
     const proxyDetails = {
-      host: '31.76.225.35', // Change this to a working proxy IP
+      host: '', // Change this to a working proxy IP
       port: 1080,                 // Change this to the proxy port (commonly 1080 or 8080)
       type: 5                     // 5 for SOCKS5, 4 for SOCKS4
       // userId: 'username',      // Uncomment if your proxy requires a username

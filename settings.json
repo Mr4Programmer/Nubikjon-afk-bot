@@ -6,7 +6,7 @@
     "type": "offline"
   },
   "server": {
-    "ip": "MatrixUzGG.aternos.me",
+    "ip": "vimba.aternos.host:11622",
     "port": 11622,
     "version": "",
     "try-creative": false
