@@ -2,6 +2,7 @@
 
 const { addLog, getLogs } = require("./logger");
 const mineflayer = require("mineflayer");
+const { SocksClient } = require('socks');
 const { Movements, pathfinder, goals } = require("mineflayer-pathfinder");
 const { GoalBlock } = goals;
 const config = require("./settings.json");
@@ -1208,19 +1209,55 @@ function createBot() {
   try {
     // FIX: use version:false to auto-detect server version so the bot can join any server.
     // If the user explicitly sets a version in settings.json it is still respected.
-    const botVersion =
+const botVersion =
       config.server.version && config.server.version.trim() !== ""
         ? config.server.version
         : false;
+
+    // --- PROXY CONFIGURATION ---
+    // You can also put these inside your config.json later if you want!
+    const proxyDetails = {
+      host: 'YOUR_PROXY_IP_HERE', // Change this to a working proxy IP
+      port: 1080,                 // Change this to the proxy port (commonly 1080 or 8080)
+      type: 5                     // 5 for SOCKS5, 4 for SOCKS4
+      // userId: 'username',      // Uncomment if your proxy requires a username
+      // password: 'password'     // Uncomment if your proxy requires a password
+    };
+
     bot = mineflayer.createBot({
       username: config["bot-account"].username,
       password: config["bot-account"].password || undefined,
       auth: config["bot-account"].type,
-      host: config.server.ip,
-      port: config.server.port,
       version: botVersion,
       hideErrors: false,
       checkTimeoutInterval: 600000,
+
+      // This custom connect function routes the config IP/Port through the proxy
+      connect: (client) => {
+        SocksClient.createConnection({
+          proxy: {
+            host: proxyDetails.host,
+            port: parseInt(proxyDetails.port),
+            type: proxyDetails.type,
+            userId: proxyDetails.userId,
+            password: proxyDetails.password
+          },
+          command: 'connect',
+          destination: {
+            host: config.server.ip,     // Pulls host dynamically from your config
+            port: parseInt(config.server.port) // Pulls port dynamically from your config
+          }
+        }, (err, info) => {
+          if (err) {
+            console.error('[Proxy Error]:', err.message);
+            return;
+          }
+          
+          // Pass the successful proxy socket directly to Mineflayer
+          client.setSocket(info.socket);
+          client.emit('connect');
+        });
+      }
     });
 
     bot.loadPlugin(pathfinder);
