@@ -6,7 +6,7 @@
     "type": "offline"
   },
   "server": {
-    "ip": "vimba.aternos.host:11622",
+    "ip": "vimba.aternos.host",
     "port": 11622,
     "version": "",
     "try-creative": false
